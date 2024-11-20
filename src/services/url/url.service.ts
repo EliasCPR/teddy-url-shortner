@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ClickRepository } from 'src/repositories/click/click.repository';
-import { UrlRepository } from 'src/repositories/url/url.repository';
+import { ClickRepository } from '../../repositories/click/click.repository';
+import { UrlRepository } from '../../repositories/url/url.repository';
 
 @Injectable()
 export class UrlService {

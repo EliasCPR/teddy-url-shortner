@@ -10,7 +10,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UrlService } from 'src/services/url/url.service';
+import { UrlService } from '../../../services/url/url.service';
 
 @Controller()
 export class UrlController {
