@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateUrlDto } from 'src/dtos/create-url-dto';
+import { CreateUrlDto } from 'src/dtos/create-url.dto';
 
 @Controller()
 @ApiTags('URL')
