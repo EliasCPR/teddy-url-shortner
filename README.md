@@ -1,99 +1,125 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Sistema de Encurtamento de URL
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este é um sistema de encurtamento de URL que permite aos usuários encurtar URLs de forma simples e eficiente. O sistema oferece funcionalidades adicionais para usuários autenticados, como editar, listar e deletar URLs encurtadas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Funcionalidades
 
-## Description
+- **Usuários não autenticados**:
+  - Encurtar URLs.
+  
+- **Usuários autenticados**:
+  - Encurtar URLs.
+  - Listar todas as URLs encurtadas.
+  - Editar URLs encurtadas.
+  - Deletar URLs encurtadas.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Requisitos
 
-## Project setup
+- **Node.js**: 14.x ou superior.
+- **NestJS**: Framework backend utilizado para construir a API.
+- **Prisma**: ORM utilizado para interagir com o banco de dados.
+- **JWT (JSON Web Tokens)**: Para autenticação de usuários.
+- **Docker**: Gerenciador de containers usado para subir o banco de dados
+- **Yarn**: Gerenciador de pacotes
 
-```bash
-$ yarn install
-```
+### Dependências
+- `@nestjs/common`
+- `@nestjs/core`
+- `@nestjs/jwt`
+- `@nestjs/swagger`
+- `prisma`
+- `jsonwebtoken`
+- `bcryptjs`
+  
+### Instalação
 
-## Compile and run the project
+1. Clone o repositório:
 
-```bash
-# development
-$ yarn run start
+   ```bash
+   git clone https://github.com/EliasCPR/teddy-url-shortner.git
+   cd url-shortener
+2. Instale as dependências:
 
-# watch mode
-$ yarn run start:dev
+   ```bash
+   yarn install
+3. Configure o banco de dados
 
-# production mode
-$ yarn run start:prod
-```
+- Execute o comando para subir o banco de dados
+    ```bash
+    docker compose up
+- Configure o arquivo `.env` com as credenciais do banco de dados, como o URL do banco de dados PostgreSQ
 
-## Run tests
+- Execute o comando para rodar as migrações do Prisma:
 
-```bash
-# unit tests
-$ yarn run test
+    ```bash
+    npx prisma migrate dev
+4. Inicie o servidor
 
-# e2e tests
-$ yarn run test:e2e
+    ```bash
+    yarn start:dev
+5. A API estará rodando em http://localhost:3000.
 
-# test coverage
-$ yarn run test:cov
-```
+## Acessando a Documentação da API
 
-## Deployment
+A documentação da API está disponível em:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+    http://localhost:3000/api
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+A documentação é gerada automaticamente pelo Swagger e permite que você visualize e interaja com os endpoints da API diretamente no navegador.
 
-```bash
-$ yarn install -g mau
-$ mau deploy
-```
+# Estrutura do Banco de Dados
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Tabela: `users`
 
-## Resources
+| Coluna        | Tipo                 | Descrição                                |
+|---------------|----------------------|------------------------------------------|
+| `id`          | `uuid`               | Identificador único do usuário (UUID)   |
+| `email`       | `varchar(255)`        | E-mail do usuário (único)               |
+| `passwordHash`| `varchar(255)`        | Hash da senha do usuário                |
+| `createdAt`   | `timestamp with time zone` | Data de criação do usuário              |
+| `updatedAt`   | `timestamp with time zone` | Data de atualização do usuário          |
+| `deletedAt`   | `timestamp with time zone` | Data de exclusão do usuário (opcional)  |
 
-Check out a few resources that may come in handy when working with NestJS:
+### Relacionamentos:
+- Um usuário pode ter várias URLs (`url`).
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## Tabela: `urls`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+| Coluna        | Tipo                        | Descrição                                |
+|---------------|-----------------------------|------------------------------------------|
+| `id`          | `uuid`                      | Identificador único da URL (UUID)       |
+| `shortCode`   | `varchar(255)`               | Código único para a URL encurtada       |
+| `originalUrl` | `varchar(2048)`              | URL original                            |
+| `createdAt`   | `timestamp with time zone`   | Data de criação da URL                  |
+| `updatedAt`   | `timestamp with time zone`   | Data de atualização da URL              |
+| `deletedAt`   | `timestamp with time zone`   | Data de exclusão da URL (opcional)      |
+| `userId`      | `uuid`                       | ID do usuário que criou a URL (opcional) |
 
-## Stay in touch
+### Relacionamentos:
+- Cada URL pode ter um usuário associado (`user`).
+- Uma URL pode ter vários clicks (`click`).
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## Tabela: `clicks`
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Coluna        | Tipo                        | Descrição                                |
+|---------------|-----------------------------|------------------------------------------|
+| `id`          | `uuid`                      | Identificador único do click (UUID)     |
+| `clickedAt`   | `timestamp with time zone`   | Data e hora do click                    |
+| `ipAddress`   | `varchar(45)`                | Endereço IP do usuário (opcional)       |
+| `userAgent`   | `varchar(255)`               | User-agent do navegador (opcional)      |
+| `urlId`       | `uuid`                       | ID da URL que foi clicada               |
+
+### Relacionamentos:
+- Cada click está associado a uma URL (`url`).
+
+---
+
+### Mapeamento de Tabelas no Banco
+
+- **Tabela de URLs**: `urls`
+- **Tabela de Usuários**: `users`
+- **Tabela de Clicks**: `clicks`
