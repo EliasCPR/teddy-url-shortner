@@ -21,9 +21,9 @@ model Url {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
-  User   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
   userId String?
-  Click  Click[]
+  click  Click[]
 
   @@map("urls")
 }
@@ -36,7 +36,7 @@ model User {
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 
-  Url Url[]
+  url Url[]
 
   @@map("users")
 }
@@ -48,7 +48,7 @@ model Click {
   userAgent String?
 
   urlId     String
-  Url       Url      @relation(fields: [urlId], references: [id])
+  url       Url      @relation(fields: [urlId], references: [id])
 
   @@map("clicks")
 }

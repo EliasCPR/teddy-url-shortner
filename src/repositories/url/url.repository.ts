@@ -28,17 +28,48 @@ export class UrlRepository {
     });
   }
 
-  async updateUrl(shortCode: string, data: Partial<Url>): Promise<Url> {
+  async findUrlsByUserWithClicks(userId: string) {
+    const urls = await this.prisma.url.findMany({
+      where: { userId, deletedAt: null },
+      select: {
+        shortCode: true,
+        originalUrl: true,
+        click: true,
+      },
+    });
+
+    return urls.map((url) => ({
+      shortCode: url.shortCode,
+      originalUrl: url.originalUrl,
+      click_count: url.click.length,
+      click: url.click,
+    }));
+  }
+
+  async updateUrl(
+    shortCode: string,
+    newUrl: string,
+    userId: string,
+  ): Promise<Url> {
     return this.prisma.url.update({
-      where: { shortCode },
-      data,
+      where: { shortCode, userId },
+      data: {
+        originalUrl: newUrl,
+      },
     });
   }
 
-  async softDeleteUrl(shortCode: string): Promise<Url> {
+  async softDeleteUrl(shortCode: string, userId: string): Promise<Url> {
     return this.prisma.url.update({
-      where: { shortCode },
+      where: { shortCode, userId },
       data: { deletedAt: new Date() },
     });
+  }
+
+  async countClicksByUrlId(urlId: string): Promise<number> {
+    const clicks = await this.prisma.click.count({
+      where: { urlId },
+    });
+    return clicks;
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ClickRepository } from '../../repositories/click/click.repository';
 import { UrlRepository } from '../../repositories/url/url.repository';
+import { Url } from '@prisma/client';
 
 @Injectable()
 export class UrlService {
@@ -9,7 +10,6 @@ export class UrlService {
     private readonly clickRepository: ClickRepository,
   ) {}
 
-  // Método para encurtar a URL
   async shortenUrl(originalUrl: string, userId?: string): Promise<string> {
     const shortCode = this.generateRandomShortCode();
 
@@ -18,29 +18,23 @@ export class UrlService {
     return shortCode;
   }
 
-  // Método para buscar a URL original pelo shortCode
   async findByShortCode(
     shortCode: string,
   ): Promise<{ originalUrl: string } | null> {
     return this.urlRepository.findUrlByShortCode(shortCode);
   }
 
-  // Método que registra o clique e retorna a URL original
   async handleClick(
     shortCode: string,
     ipAddress: string,
     userAgent: string,
   ): Promise<string> {
-    // Encontra a URL original pelo shortCode
     const url = await this.urlRepository.findUrlByShortCode(shortCode);
     if (!url) {
       throw new Error('URL não encontrada');
     }
-
-    // Cria um novo clique na tabela Click
     await this.clickRepository.createClick(url.id, ipAddress, userAgent);
 
-    // Retorna a URL original para redirecionamento
     return url.originalUrl;
   }
 
@@ -59,5 +53,21 @@ export class UrlService {
     }
 
     return shortCode;
+  }
+
+  async findUrlsByUserWithClicks(userId: string) {
+    return this.urlRepository.findUrlsByUserWithClicks(userId);
+  }
+
+  async updateUrl(
+    shortCode: string,
+    newUrl: string,
+    userId: string,
+  ): Promise<Url> {
+    return this.urlRepository.updateUrl(shortCode, newUrl, userId);
+  }
+
+  async softDeleteUrl(shortCode: string, userId: string): Promise<Url> {
+    return this.urlRepository.softDeleteUrl(shortCode, userId);
   }
 }
