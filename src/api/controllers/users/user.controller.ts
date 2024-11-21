@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
   HttpCode,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from 'src/services/user/user.service';
 import { User } from '@prisma/client';
@@ -20,11 +22,24 @@ import {
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { UserDto } from 'src/dtos/user.dto';
+import { AuthService } from 'src/services/auth.service';
+import { LoginDto } from 'src/dtos/login.dto';
+import { JwtAuthGuard } from 'src/api/guards/auth.guard';
+import { Request } from 'express';
 
 @ApiTags('User')
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Req() req: Request) {
+    return req.user;
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -77,5 +92,16 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'User not found' })
   async softDeleteUser(@Param('id') id: string): Promise<void> {
     await this.userService.softDeleteUser(id);
+  }
+
+  @ApiTags('Authentication')
+  @Post('login')
+  @ApiBody({ description: 'Login data', type: LoginDto })
+  async login(@Body() loginDto: LoginDto) {
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
+    return this.authService.login(user);
   }
 }

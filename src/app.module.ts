@@ -8,9 +8,20 @@ import { ClickRepository } from './repositories/click/click.repository';
 import { UserRepository } from './repositories/user/user.repository';
 import { UserService } from './services/user/user.service';
 import { PasswordHashService } from './services/hash.service';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { JWT_SECRET } from './infrastructure/enviroments/env';
+import { AuthService } from './services/auth.service';
+import { JwtStrategy } from './services/jwt.strategy';
 
 @Module({
-  imports: [],
+  imports: [
+    PassportModule,
+    JwtModule.register({
+      secret: JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
+  ],
   controllers: [UserController, UrlController],
   providers: [
     PrismaService,
@@ -20,6 +31,8 @@ import { PasswordHashService } from './services/hash.service';
     ClickRepository,
     UserRepository,
     PasswordHashService,
+    AuthService,
+    JwtStrategy,
   ],
 })
 export class AppModule {}
