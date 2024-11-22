@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserRepository } from 'src/repositories/user/user.repository';
 import { PasswordHashService } from '../hash.service';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -11,20 +12,17 @@ export class UserService {
   ) {}
 
   async createUser(email: string, password: string): Promise<User> {
-    // Gera o hash da senha antes de salvar
     const passwordHash = await this.passwordHashService.hashPassword(password);
-    // Cria o usuário com o email e senha hashada
     return this.userRepository.createUser(email, passwordHash);
   }
 
-  // Método para autenticar um usuário (verificar a senha)
   async validateUserPassword(
     email: string,
     password: string,
   ): Promise<boolean> {
     const user = await this.userRepository.findUserByEmail(email);
     if (!user) {
-      return false; // Se o usuário não for encontrado, retorna false
+      return false;
     }
     return this.passwordHashService.comparePassword(
       password,
@@ -48,13 +46,25 @@ export class UserService {
     return user;
   }
 
-  async updateUser(id: string, data: Partial<User>): Promise<User> {
+  async updateUser(id: string, data: UpdateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findUserById(id);
     if (!existingUser) {
       throw new NotFoundException('User not found');
     }
 
-    return this.userRepository.updateUser(id, data);
+    let passwordHash: string | undefined;
+
+    if (data.password) {
+      passwordHash = await this.passwordHashService.hashPassword(data.password);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...updateData } = data;
+
+    return this.userRepository.updateUser(id, {
+      ...updateData,
+      ...(passwordHash && { passwordHash }),
+    });
   }
 
   async softDeleteUser(id: string): Promise<User> {

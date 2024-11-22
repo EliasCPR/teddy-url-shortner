@@ -36,15 +36,10 @@ export class UrlController {
   @ApiResponse({ status: 201, description: 'Successfully shortened the URL' })
   @ApiResponse({ status: 400, description: 'Invalid URL' })
   async shortnerUrl(
-    @Body('url') originalUrl: string,
+    @Body() createUrlDto: CreateUrlDto,
     @Request() req: any,
   ): Promise<{ shortUrl: string; userId?: string }> {
-    if (!originalUrl) {
-      throw new HttpException(
-        'Original URL is required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const { url: originalUrl } = createUrlDto;
 
     const userId = req.user?.userId || null;
 

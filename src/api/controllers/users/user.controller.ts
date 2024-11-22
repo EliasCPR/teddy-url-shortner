@@ -47,7 +47,7 @@ export class UserController {
   @ApiResponse({ status: 201, description: 'User created successfully' })
   @ApiResponse({ status: 409, description: 'Email already in use' })
   async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.createUser(
+    return await this.userService.createUser(
       createUserDto.email,
       createUserDto.password,
     );
@@ -75,7 +75,11 @@ export class UserController {
   @ApiOperation({ summary: 'Update user' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({ status: 200, description: 'User updated', type: UserDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated',
+    type: UpdateUserDto,
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   async updateUser(
     @Param('id') id: string,
